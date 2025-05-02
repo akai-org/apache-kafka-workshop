@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Item</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body>
+
+<h2>Add New Item</h2>
+<form id="addForm">
+    <label for="input">Input</label>
+    <input type="text" id="input" placeholder="Item input" required/>
+    <button type="submit">Add</button>
+</form>
+
+<script th:src="@{/js/addItemScript.js}"></script>
+
+</body>
+</html>

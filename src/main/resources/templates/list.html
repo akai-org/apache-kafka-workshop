@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Item Table</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+<body>
+
+<h2>Items</h2>
+<table id="itemsTable">
+    <thead>
+    <tr>
+        <th>Input</th>
+        <th>Status</th>
+        <th>Result</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script th:src="@{/js/itemListScript.js}"></script>
+
+<a href="/add">Add Item</a>
+
+</body>
+</html>
