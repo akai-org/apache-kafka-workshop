@@ -22,10 +22,10 @@ public class ItemCompleteService {
         this.itemDatabaseService = itemDatabaseService;
     }
 
-    // TODO
+    @KafkaListener(topics = "processed-items", groupId = "my-group", containerFactory = "itemToSaveMessageKafkaListenerContainerFactory")
     public void listen(ConsumerRecord<String, ItemToSaveMessage> record) {
-        logger.info("Received ItemToSaveMessage: {}", /* TODO */);
-        var inMessage = /* TODO */
+        logger.info("Received ItemToSaveMessage: {}", record.key());
+        var inMessage = record.value();
         var item = new Item(
                 UUID.fromString(inMessage.getUuid()),
                 Status.SUCCESS.name(),
@@ -34,4 +34,3 @@ public class ItemCompleteService {
         itemDatabaseService.upsertItem(item).subscribe();
     }
 }
-

@@ -18,17 +18,18 @@ import java.util.UUID;
 public class ItemCreateService {
 
     private final ItemDatabaseService itemDatabaseService;
-    /* TODO */
+    private final KafkaTemplate<String, ItemToProcessMessage> kafkaTemplate;
     private final Logger logger = LoggerFactory.getLogger(ItemCreateService.class);
 
-    public ItemCreateService(ItemDatabaseService itemDatabaseService /* TODO */) {
+    public ItemCreateService(ItemDatabaseService itemDatabaseService, KafkaTemplate<String, ItemToProcessMessage> kafkaTemplate) {
         this.itemDatabaseService = itemDatabaseService;
-        /* TODO */
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     public Mono<Item> addItem(ItemRequest request) {
         var item = new Item(UUID.randomUUID(), request.input(), Status.WAITING_FOR_PROCESSING.name());
         return sendToKafka(item)
+
                 .doOnNext(i -> itemDatabaseService.createIfNotExists(i)
                         .subscribeOn(Schedulers.boundedElastic())
                         .subscribe()
@@ -42,10 +43,9 @@ public class ItemCreateService {
                 .setStatus(item.status())
                 .build();
 
-        return Mono.fromFuture(/* TODO */)
+        return Mono.fromFuture(kafkaTemplate.send("items-to-process", message.getUuid(), message))
                 .doOnSuccess(sendResult -> logger.info("Sent item to Kafka: {}", message.getUuid()))
                 .doOnError(err -> logger.error("Failed to save item to Kafka: {}", err.toString()))
                 .thenReturn(item);
     }
 }
-

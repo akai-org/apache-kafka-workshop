@@ -28,30 +28,38 @@ public class KafkaConsumerConfig {
 
     @Bean
     public ConsumerFactory<String, ItemToProcessMessage> itemToProcessMessageConsumerFactory() {
-        // TODO
+        Map<String, Object> props = new HashMap<>(baseProps());
+        props.put("specific.protobuf.value.type", ItemToProcessMessage.class.getName());
+        return new DefaultKafkaConsumerFactory<>(props);
     }
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, ItemToProcessMessage> itemToProcessKafkaListenerContainerFactory() {
-        // TODO
+        var factory = new ConcurrentKafkaListenerContainerFactory<String, ItemToProcessMessage>();
+        factory.setConsumerFactory(itemToProcessMessageConsumerFactory());
+        return factory;
     }
 
     @Bean
     public ConsumerFactory<String, ItemToSaveMessage> itemToSaveMessageConsumerFactory() {
-        // TODO
+        Map<String, Object> props = new HashMap<>(baseProps());
+        props.put("specific.protobuf.value.type", ItemToSaveMessage.class.getName());
+        return new DefaultKafkaConsumerFactory<>(props);
     }
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, ItemToSaveMessage> itemToSaveMessageKafkaListenerContainerFactory() {
-        // TODO
+        var factory = new ConcurrentKafkaListenerContainerFactory<String, ItemToSaveMessage>();
+        factory.setConsumerFactory(itemToSaveMessageConsumerFactory());
+        return factory;
     }
 
     private Map<String, Object> baseProps() {
         Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, /* TODO */);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, /* TODO */);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, /* TODO */);
-        props.put("schema.registry.url", /* TODO */);
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServerAddress);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaProtobufDeserializer.class);
+        props.put("schema.registry.url", schemaRegistryServerAddress);
         return props;
     }
 }
